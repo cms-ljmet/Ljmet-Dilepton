@@ -8,12 +8,13 @@ import getopt
 
 import socket
 #Configuration options that usually don't change
-files_per_job = 1
+files_per_job = 10
 #Absolute path that precedes '/store...'
+print "plouc"
 
 if (socket.gethostname().find('brux')>=0) :
     print "Submitting jobs at Brown"
-    sePath='\'file:///mnt/hadoop' 
+    sePath='\'file://' 
     setupString='source \/state\/partition1\/osg_app\/cmssoft\/cms\/cmsset_default.csh'
 elif (socket.gethostname().find('fnal')>=0):
     print "Submitting jobs at FNAL"
@@ -27,7 +28,8 @@ else:
 #json='Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
 #json='Cert_190456-206940_8TeV_PromptReco_Collisions12_JSON.txt'
 #Folder in LJMet where the lists of file names are kepy
-localFileDir='LJMet/Com/python/Samples_2012/Dilepton/'
+#localFileDir='LJMet/Com/python/Samples_2012/Dilepton/'
+#Use the absolute path now
 
 #Configuration options parsed from arguments
 #Switching to getopt for compatibility with older python
@@ -72,12 +74,12 @@ if (not checkDataType and not useMC):
 
 relBase = os.environ['CMSSW_BASE']
 
-fileDir = relBase+'/src/'+localFileDir
+#fileDir = relBase+'/src/'+localFileDir
 
-files = fileDir + fileList 
+files = fileList 
 
 if (not os.path.isfile(files)):
-    print 'File with input root files '+ fileList +' not found in '+fileDir
+    print 'File with input root files '+ fileList +' not found. Please give absolute path'
     sys.exit(1)
 
 outputdir = os.path.abspath('.')
@@ -102,9 +104,12 @@ def get_input(num, list):
         if line.find('root')>0:
             file_count=file_count+1
             if file_count>(num-1) and file_count<(num+files_per_job):
-                f_name=re.search('.+\'(.+\.root)',line)
-                result=result+'                 '+ sePath + f_name.group(1)+'\',\n'
+                print line
+		#f_name=re.search('.+\'(.+\.root)',line)
+		#print f_name
+                result=result+ sePath + line.strip()+'\',\n'
     file_list.close()
+    print result
     return result
 
 j = 1
@@ -126,7 +131,7 @@ int_file = open(dir+'/'+'interactive.csh','w')
 
 while ( nfiles <= count ):    
     
-    py_templ_file = open(relBase+'/src/LJMet/Com/condor/DileptonTemplate.py')
+    py_templ_file = open(relBase+'/src/LJMet/Dilepton/condor/DileptonTemplate.py')
     
     py_file = open(dir+'/'+prefix+'_'+str(j)+'.py','w')
 
@@ -156,7 +161,7 @@ os.system('chmod +x '+dir+'/'+'interactive.csh')
 
 njobs = j - 1
 
-jdl_templ_file = open(relBase+'/src/LJMet/Com/condor/DileptonTemplate.jdl')
+jdl_templ_file = open(relBase+'/src/LJMet/Dilepton/condor/DileptonTemplate.jdl')
 jdl_file       = open(dir+'/'+prefix+'.jdl','w')
 
 
