@@ -28,7 +28,11 @@ process.ljmet.excluded_calculators = cms.vstring(
     'WprimeCalc',
     'LjetsTopoCalc',
     'LjetsTopoCalcNew',
-    'StopCalc'
+    'StopCalc',
+    'PdfCalc',
+    'TprimeCalc',
+    'ChargedHiggsCalc',
+    'JetSubCalc'
     ) 
 ############################################################
 #
@@ -90,7 +94,7 @@ process.event_selector = cms.PSet(
     min_met                  = cms.double(0.0),
 
     btag_cuts                = cms.bool(False),
-    btagOP                   = cms.string("CSVM"),
+    btagOP                   = cms.string("CSVL"),
     btag_1                   = cms.bool(True),
     btag_2                   = cms.bool(True),
     btag_3                   = cms.bool(False),
@@ -102,7 +106,7 @@ process.event_selector = cms.PSet(
     electron_collection      = cms.InputTag('selectedPatElectronsPFlowLoose'),
     met_collection           = cms.InputTag('patMETsPFlow'),
 
-    JEC_txtfile              = cms.string(relBase+'/src/LJMet/Com/cond/Summer12_V2_DATA_AK5PF_UncertaintySources.txt'),
+    JEC_txtfile = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V5_DATA_UncertaintySources_AK5PF.txt'),
     JECup		     = cms.bool(False),
     JECdown                  = cms.bool(False),
     JERup                    = cms.bool(False),
@@ -110,14 +114,14 @@ process.event_selector = cms.PSet(
 
     do53xJEC                 = cms.bool(True),
 
-    MCL1JetPar               = cms.string(relBase+'/src/LJMet/Com/data/START53_V7G_L1FastJet_AK5PFchs.txt'),
-    MCL2JetPar               = cms.string(relBase+'/src/LJMet/Com/data/START53_V7G_L2Relative_AK5PFchs.txt'),
-    MCL3JetPar               = cms.string(relBase+'/src/LJMet/Com/data/START53_V7G_L3Absolute_AK5PFchs.txt'),
+    MCL1JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L1FastJet_AK5PF.txt'),
+    MCL2JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L2Relative_AK5PF.txt'),
+    MCL3JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L3Absolute_AK5PF.txt'),
 
-    DataL1JetPar             = cms.string(relBase+'/src/LJMet/Com/data/FT_53_V10_AN3_L1FastJet_AK5PFchs.txt'),
-    DataL2JetPar             = cms.string(relBase+'/src/LJMet/Com/data/FT_53_V10_AN3_L2Relative_AK5PFchs.txt'),
-    DataL3JetPar             = cms.string(relBase+'/src/LJMet/Com/data/FT_53_V10_AN3_L3Absolute_AK5PFchs.txt'),
-    DataResJetPar            = cms.string(relBase+'/src/LJMet/Com/data/FT_53_V10_AN3_L2L3Residual_AK5PFchs.txt')
+    DataL1JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L1FastJet_AK5PF.txt'),
+    DataL2JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L2Relative_AK5PF.txt'),
+    DataL3JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L3Absolute_AK5PF.txt'),
+    DataResJetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L2L3Residual_AK5PF.txt')
 )
 
 #######################################################
