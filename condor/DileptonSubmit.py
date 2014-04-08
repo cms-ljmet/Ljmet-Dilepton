@@ -9,16 +9,19 @@ import getopt
 import socket
 #Configuration options that usually don't change
 files_per_job = 10
+
 #Absolute path that precedes '/store...'
-print "plouc"
+# The script checks whether it is an absolute path or not
 
 if (socket.gethostname().find('brux')>=0) :
     print "Submitting jobs at Brown"
-    sePath='\'file://' 
+    sePath='\'file://'
+    storePath='/mnt/hadoop'
     setupString='source \/state\/partition1\/osg_app\/cmssoft\/cms\/cmsset_default.csh'
 elif (socket.gethostname().find('fnal')>=0):
     print "Submitting jobs at FNAL"
     sePath='\'dcache:///pnfs/cms/WAX/11' 
+    storePath=''
     setupString='source \/uscmst1\/prod\/sw\/cms\/cshrc prod'
 else:
     print "Script not done for ", socket.gethostname()
@@ -97,6 +100,7 @@ if os.path.exists(dir):
 else: os.makedirs(dir)
 
 def get_input(num, list):
+    print "START: ", num, files_per_job
     result = ''
     file_list = open(files)
     file_count = 0
@@ -104,11 +108,14 @@ def get_input(num, list):
         if line.find('root')>0:
             file_count=file_count+1
             if file_count>(num-1) and file_count<(num+files_per_job):
-                print line
-		#f_name=re.search('.+\'(.+\.root)',line)
+                #print line
 		#print f_name
-                result=result+ sePath + line.strip()+'\',\n'
+                result=result+ sePath
+		if (line.strip()[:6]=='/store'):
+		    result=result+ storePath
+                result=result+line.strip()+'\',\n'
     file_list.close()
+    print "DONE:"
     print result
     return result
 
