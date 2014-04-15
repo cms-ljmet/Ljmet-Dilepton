@@ -100,7 +100,6 @@ if os.path.exists(dir):
 else: os.makedirs(dir)
 
 def get_input(num, list):
-    print "START: ", num, files_per_job
     result = ''
     file_list = open(files)
     file_count = 0
@@ -115,7 +114,6 @@ def get_input(num, list):
 		    result=result+ storePath
                 result=result+line.strip()+'\',\n'
     file_list.close()
-    print "DONE:"
     print result
     return result
 
