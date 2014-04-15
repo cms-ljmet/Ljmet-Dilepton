@@ -131,9 +131,10 @@ process.event_selector = cms.PSet(
 process.inputs = cms.PSet (
     nEvents    = cms.int32(-1),
     skipEvents = cms.int32(0),
+    useHcalLaserEventFilter = cms.bool(True),
     lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange()),
     fileNames  = cms.vstring(
-                             CONDOR_FILELIST
+CONDOR_FILELIST
     )
 )
 

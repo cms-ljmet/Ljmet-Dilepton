@@ -131,6 +131,7 @@ process.event_selector = cms.PSet(
 process.inputs = cms.PSet (
     nEvents    = cms.int32(-1),
     skipEvents = cms.int32(0),
+    useHcalLaserEventFilter = cms.bool(True),
     lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange()),
     fileNames  = cms.vstring("/data1/speer/tblsm/cmssw/git-transition/new-git_5_3_6/src/LJMet/Dilepton/341748F3-5B1B-E211-90D5-0026189438E8.root"
     )
