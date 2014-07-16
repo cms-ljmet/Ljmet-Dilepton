@@ -13,6 +13,7 @@ condorJSON = str('CONDOR_JSON')
 process.load('LJMet.Com.DileptonCalc_cfi')
 process.DileptonCalc.isMc     = condorIsMC
 process.DileptonCalc.dataType = cms.string('CONDOR_DATATYPE')
+process.load('LJMet.Com.PdfCalc_cfi')
 
 ############################################################
 #
@@ -32,6 +33,7 @@ process.ljmet.excluded_calculators = cms.vstring(
     'PdfCalc',
     'TprimeCalc',
     'ChargedHiggsCalc',
+    'TopEventReweightCalc',
     'JetSubCalc'
     ) 
 ############################################################
@@ -106,23 +108,38 @@ process.event_selector = cms.PSet(
     electron_collection      = cms.InputTag('selectedPatElectronsPFlowLoose'),
     met_collection           = cms.InputTag('patMETsPFlow'),
 
-    JEC_txtfile = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V5_DATA_UncertaintySources_AK5PF.txt'),
+    JEC_txtfile = cms.string(relBase+'/src/LJMet/Dilepton/JEC/uncertainties/Summer13_V5_DATA_UncertaintySources_AK5PFchs.txt'),
+    JEC_source  = cms.string("Total"),
     JECup		     = cms.bool(False),
     JECdown                  = cms.bool(False),
     JERup                    = cms.bool(False),
     JERdown                  = cms.bool(False),
+    METup                    = cms.bool(False),
+    METdown                  = cms.bool(False),
+    METuncert                = cms.double(0.1),
 
+#    BTagUncertBcUp                  = cms.bool(False),
     do53xJEC                 = cms.bool(True),
 
-    MCL1JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L1FastJet_AK5PF.txt'),
-    MCL2JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L2Relative_AK5PF.txt'),
-    MCL3JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L3Absolute_AK5PF.txt'),
+    MCL1JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_MC_txts_fromDB/Summer13_V4_MC_L1FastJet_AK5PFchs.txt'),
+    MCL2JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_MC_txts_fromDB/Summer13_V4_MC_L2Relative_AK5PFchs.txt'),
+    MCL3JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_MC_txts_fromDB/Summer13_V4_MC_L3Absolute_AK5PFchs.txt'),
 
-    DataL1JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L1FastJet_AK5PF.txt'),
-    DataL2JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L2Relative_AK5PF.txt'),
-    DataL3JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L3Absolute_AK5PF.txt'),
-    DataResJetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L2L3Residual_AK5PF.txt')
+    DataL1JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_DATA_txts_fromDB/Summer13_V4_DATA_L1FastJet_AK5PFchs.txt'),
+    DataL2JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_DATA_txts_fromDB/Summer13_V4_DATA_L2Relative_AK5PFchs.txt'),
+    DataL3JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_DATA_txts_fromDB/Summer13_V4_DATA_L3Absolute_AK5PFchs.txt'),
+    DataResJetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_DATA_txts_fromDB/Summer13_V4_DATA_L2L3Residual_AK5PFchs.txt')
 )
+
+process.load('LJMet.Com.TopEventReweightCalc_cfi')
+process.TopEventReweightCalc.isMc     = condorIsMC
+process.TopEventReweightCalc.reweightBSemiLeptDecyas = cms.bool(False)
+process.TopEventReweightCalc.nuDecayFractionSource = cms.double(0.25)
+process.TopEventReweightCalc.nuDecayFractionTarget = cms.double(0.239)
+process.TopEventReweightCalc.reweightBfragmentation = cms.bool(False)
+process.TopEventReweightCalc.fragSourceFile = cms.string(relBase+'/src/LJMet/Dilepton/data/TopUtils_data_MC_BJES_TuneZ2star.root')
+process.TopEventReweightCalc.fragTargetFile = cms.string(relBase+'/src/LJMet/Dilepton/data/TopUtils_data_MC_BJES_TuneZ2star_rbLEP.root')
+
 
 #######################################################
 #
