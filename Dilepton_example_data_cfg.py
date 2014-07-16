@@ -5,15 +5,14 @@ import FWCore.ParameterSet.Types as CfgTypes
 process = cms.Process("LJMetCom")
 
 #Arguments from condor submit script which are used more than once
-condorIsMC = bool(CONDOR_ISMC)
-relBase    = str('CONDOR_RELBASE')
-condorJSON = str('CONDOR_JSON')
+condorIsMC = bool(False)
+relBase    = str('/user_data/speer/topmass/ljmet_prod/CMSSW_5_3_16/')
+condorJSON = str('Jan222013ReReco_json.txt')
 
 # Dilepton calculator options
 process.load('LJMet.Com.DileptonCalc_cfi')
 process.DileptonCalc.isMc     = condorIsMC
-process.DileptonCalc.dataType = cms.string('CONDOR_DATATYPE')
-process.load('LJMet.Com.PdfCalc_cfi')
+process.DileptonCalc.dataType = cms.string('MuMu')
 
 ############################################################
 #
@@ -33,9 +32,8 @@ process.ljmet.excluded_calculators = cms.vstring(
     'PdfCalc',
     'TprimeCalc',
     'ChargedHiggsCalc',
-    'TopEventReweightCalc',
     'JetSubCalc'
-    ) 
+    )
 ############################################################
 #
 # Event selector options
@@ -108,50 +106,36 @@ process.event_selector = cms.PSet(
     electron_collection      = cms.InputTag('selectedPatElectronsPFlowLoose'),
     met_collection           = cms.InputTag('patMETsPFlow'),
 
-    JEC_txtfile = cms.string(relBase+'/src/LJMet/Dilepton/JEC/uncertainties/Summer13_V5_DATA_UncertaintySources_AK5PFchs.txt'),
-    JEC_source  = cms.string("Total"),
+    JEC_txtfile = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V5_DATA_UncertaintySources_AK5PF.txt'),
     JECup		     = cms.bool(False),
     JECdown                  = cms.bool(False),
     JERup                    = cms.bool(False),
     JERdown                  = cms.bool(False),
-    METup                    = cms.bool(False),
-    METdown                  = cms.bool(False),
-    METuncert                = cms.double(0.1),
 
-#    BTagUncertBcUp                  = cms.bool(False),
     do53xJEC                 = cms.bool(True),
 
-    MCL1JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_MC_txts_fromDB/Summer13_V4_MC_L1FastJet_AK5PFchs.txt'),
-    MCL2JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_MC_txts_fromDB/Summer13_V4_MC_L2Relative_AK5PFchs.txt'),
-    MCL3JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_MC_txts_fromDB/Summer13_V4_MC_L3Absolute_AK5PFchs.txt'),
+    MCL1JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L1FastJet_AK5PF.txt'),
+    MCL2JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L2Relative_AK5PF.txt'),
+    MCL3JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_MC_L3Absolute_AK5PF.txt'),
 
-    DataL1JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_DATA_txts_fromDB/Summer13_V4_DATA_L1FastJet_AK5PFchs.txt'),
-    DataL2JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_DATA_txts_fromDB/Summer13_V4_DATA_L2Relative_AK5PFchs.txt'),
-    DataL3JetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_DATA_txts_fromDB/Summer13_V4_DATA_L3Absolute_AK5PFchs.txt'),
-    DataResJetPar = cms.string(relBase+'/src/LJMet/Dilepton/JEC/Summer13_V4_DATA_txts_fromDB/Summer13_V4_DATA_L2L3Residual_AK5PFchs.txt')
+    DataL1JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L1FastJet_AK5PF.txt'),
+    DataL2JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L2Relative_AK5PF.txt'),
+    DataL3JetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L3Absolute_AK5PF.txt'),
+    DataResJetPar = cms.string(relBase+'/src/LJMet/singletPrime/JEC/Summer13_V4_DATA_L2L3Residual_AK5PF.txt')
 )
-
-process.load('LJMet.Com.TopEventReweightCalc_cfi')
-process.TopEventReweightCalc.isMc     = condorIsMC
-process.TopEventReweightCalc.reweightBSemiLeptDecyas = cms.bool(False)
-process.TopEventReweightCalc.nuDecayFractionSource = cms.double(0.25)
-process.TopEventReweightCalc.nuDecayFractionTarget = cms.double(0.239)
-process.TopEventReweightCalc.reweightBfragmentation = cms.bool(False)
-process.TopEventReweightCalc.fragSourceFile = cms.string(relBase+'/src/LJMet/Dilepton/data/TopUtils_data_MC_BJES_TuneZ2star.root')
-process.TopEventReweightCalc.fragTargetFile = cms.string(relBase+'/src/LJMet/Dilepton/data/TopUtils_data_MC_BJES_TuneZ2star_rbLEP.root')
-
 
 #######################################################
 #
 # Input files
 #
 process.inputs = cms.PSet (
-    nEvents    = cms.int32(-1),
+    nEvents    = cms.int32(100),
     skipEvents = cms.int32(0),
     useHcalLaserEventFilter = cms.bool(True),
     lumisToProcess = CfgTypes.untracked(CfgTypes.VLuminosityBlockRange()),
-    fileNames  = cms.vstring(
-CONDOR_FILELIST
+    fileNames  = 
+cms.vstring(
+"/mnt/hadoop/store/results/B2G/DoubleMuParked/StoreResults-V2-Run2012B-22Jan2013-v1_TLBSM_53x_v3-45cbb6c27540456f7aaf244304c73a89/DoubleMuParked/USER/StoreResults-V2-Run2012B-22Jan2013-v1_TLBSM_53x_v3-45cbb6c27540456f7aaf244304c73a89/0000/002184DB-BC3C-E311-AAB3-0026189438D8.root"
     )
 )
 
@@ -168,7 +152,7 @@ if not condorIsMC:
 # Output
 #
 process.outputs = cms.PSet (
-    outputName = cms.string('CONDOR_OUTFILE'),
+    outputName = cms.string('ljmet_Data'),
     treeName   = cms.string('ljmet'),
 )
 

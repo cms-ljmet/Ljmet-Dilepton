@@ -5,20 +5,22 @@ import re
 import sys
 import fileinput
 import getopt
-
+import subprocess
 import socket
 #Configuration options that usually don't change
-files_per_job = 10
+files_per_job = 5
 
 #Absolute path that precedes '/store...'
 # The script checks whether it is an absolute path or not
 
 if (socket.gethostname().find('brux')>=0) :
+    brux=bool(True)
     print "Submitting jobs at Brown"
     sePath='\'file://'
     storePath='/mnt/hadoop'
     setupString='source \/state\/partition1\/osg_app\/cmssoft\/cms\/cmsset_default.csh'
 elif (socket.gethostname().find('fnal')>=0):
+    brux=bool(False)
     print "Submitting jobs at FNAL"
     sePath='\'dcache:///pnfs/cms/WAX/11' 
     storePath=''
@@ -37,7 +39,7 @@ else:
 #Configuration options parsed from arguments
 #Switching to getopt for compatibility with older python
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "", ["useMC=", "sample=","dataType=","fileList=", "outDir=","submit=","json="])
+    opts, args = getopt.getopt(sys.argv[1:], "", ["useMC=", "sample=","dataType=","fileList=", "outDir=","submit=","json=","jec="])
 except getopt.GetoptError as err:
     print str(err)
     sys.exit(1)
@@ -49,6 +51,8 @@ fileList = str('None')
 outDir   = str('None')
 json     = str('None')
 submit   = bool(False)
+jec      = str('Total')
+changeJEC= bool(False)
 
 for o, a in opts:
     print o, a
@@ -65,6 +69,10 @@ for o, a in opts:
     elif o == "--fileList": fileList = str(a)
     elif o == "--outDir":   outDir   = str(a)
     elif o == "--json":     json   = str(a)
+    elif o == "--jec":
+        jec   = str(a)
+	changeJEC = True
+	prefix = jec
     elif o == "--submit":
         if a == 'True':     submit = True
 
@@ -88,6 +96,7 @@ if (not os.path.isfile(files)):
 outputdir = os.path.abspath('.')
 if str(outDir) != 'None': outputdir = outDir
 else:                     print 'Output dir not specified. Setting it to current directory.'
+#if changeJEC: outputdir = outputdir+'/'+jec
 
 if submit: print 'Will submit jobs to Condor'
 else:      print 'Will not submit jobs to Condor'
@@ -114,7 +123,7 @@ def get_input(num, list):
 		    result=result+ storePath
                 result=result+line.strip()+'\',\n'
     file_list.close()
-    print result
+    #print result
     return result
 
 j = 1
@@ -150,6 +159,7 @@ while ( nfiles <= count ):
         line=line.replace('CONDOR_JSON',     json)
         line=line.replace('CONDOR_FILELIST', singleFileList)
         line=line.replace('CONDOR_OUTFILE',  prefix+'_'+str(j))
+        if (changeJEC): line=line.replace('Total',  jec)
         py_file.write(line)
     py_file.close()
 
@@ -184,5 +194,19 @@ os.system('sed -e \'s/SETUP/'+setupString+'/g\' DileptonTemplate.csh > '+dir+'/'
 if (submit):
     savedPath = os.getcwd()
     os.chdir(dir)
-    os.system('condor_submit '+prefix+'.jdl')
+    print njobs
+    proc = subprocess.Popen(['condor_submit', prefix+'.jdl'], stdout=subprocess.PIPE) 
+    (out, err) = proc.communicate()
+    print "condor output:", out
+    if (brux):
+	print out.splitlines()[-1]
+	nbr = out.splitlines()[-1].split(' ')[-1]
+	print "job number", nbr[:-1]
+	print "job file ", '/home/speer/jobs/'+nbr[:-1]
+	job_file = open('/home/speer/jobs/'+nbr[:-1],'w')
+	job_file.write(prefix + " "+str(njobs))
+	job_file.close()
+	#os.system('condor_prio -10 '+nbr[:-1])
+
+    #os.system('condor_submit '+prefix+'.jdl')
     os.chdir(savedPath)
